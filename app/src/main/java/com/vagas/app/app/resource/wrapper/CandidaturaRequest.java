@@ -1,9 +1,13 @@
 package com.vagas.app.app.resource.wrapper;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class CandidaturaRequest {
 
+    @ApiModelProperty(notes = "ID da vaga pretendida.")
     private Long id_vaga;
 
+    @ApiModelProperty(notes = "ID do candidato.")
     private Long id_candidato;
 
     public Long getId_vaga() {

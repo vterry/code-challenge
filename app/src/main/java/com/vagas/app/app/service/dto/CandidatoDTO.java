@@ -1,25 +1,33 @@
 package com.vagas.app.app.service.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class CandidatoDTO implements Comparable<CandidatoDTO> {
 
+    @ApiModelProperty(notes = "ID do candidato. - Esse valor é gerado automaticamente.")
     private Long id;
 
+    @ApiModelProperty(notes = "Nome do candidato")
     @NotNull(message = "Nome do candidato obrigatorio.")
     private String nome;
 
+    @ApiModelProperty(notes = "Profissão atual do candidato.")
     private String profissao;
 
+    @ApiModelProperty(notes = "Localização do candidato.")
     @NotNull(message = "Localizacao do canditado obrigatorio.")
     private String localizacao;
 
+    @ApiModelProperty(notes = "Nivel de experiencia do candidato.")
     @NotNull(message = "Nivel do candidato obrigatorio.")
     @Min(1) @Max(5)
     private Integer nivel;
 
+    @ApiModelProperty(notes = "Score do candidato em relação as vagas cadastradas.")
     private Integer score;
 
     public Long getId() {

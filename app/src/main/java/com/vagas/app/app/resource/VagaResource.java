@@ -1,11 +1,12 @@
 package com.vagas.app.app.resource;
 
-import com.vagas.app.app.domain.Vaga;
 import com.vagas.app.app.resource.errors.RecordNotFoundException;
 import com.vagas.app.app.service.VagaService;
 import com.vagas.app.app.service.dto.CandidatoDTO;
 import com.vagas.app.app.resource.wrapper.CandidaturaRequest;
 import com.vagas.app.app.service.dto.VagaDTO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +17,8 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@Api(value = "vagas.com", description = "Permite cadastrar novas vagas, realizar a listagemd e vagas cadastradas, " +
+             "realizar candidaturas e rankear os candidatos.")
 public class VagaResource {
 
     private VagaService service;
@@ -26,8 +29,8 @@ public class VagaResource {
         this.service = service;
     }
 
-    @PostMapping(value = "/v1/vaga", produces = "application/json")
-    @ResponseBody
+    @ApiOperation("Cadastrar novas vagas.")
+    @PostMapping(value = "/v1/vaga")
     public ResponseEntity<JSONObject> cadastrarVagas(@RequestBody @Valid VagaDTO vagaDTO) {
         VagaDTO vaga = service.save(vagaDTO);
         response.clear();
@@ -39,6 +42,7 @@ public class VagaResource {
                 .body(response);
     }
 
+    @ApiOperation("Efetua a candidatura de um candidato em uma vaga existente.")
     @PostMapping("/v1/candidatura")
     public ResponseEntity<JSONObject> efetuarCandidatura(@RequestBody CandidaturaRequest candidaturaDTO) {
         response.clear();
@@ -54,11 +58,13 @@ public class VagaResource {
     }
 
 
+    @ApiOperation("Listar vagas cadastradas.")
     @GetMapping("/v1/vagas")
     public ResponseEntity<List<VagaDTO>> listarVagas() {
         return ResponseEntity.ok(service.findAll());
     }
 
+    @ApiOperation("Lista o ranking de candidatos para uma vaga especifica.")
     @RequestMapping(value = "/v1/vagas/{id}/candidaturas/ranking", method = RequestMethod.GET)
     public ResponseEntity<List<CandidatoDTO>> listarCandidaturas(@PathVariable("id") Long id) {
         return ResponseEntity.ok(service.listarCandidaturas(id));
