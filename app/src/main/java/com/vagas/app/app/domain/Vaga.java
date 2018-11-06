@@ -2,8 +2,7 @@ package com.vagas.app.app.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity(name = "vaga")
 public class Vaga implements Serializable {
@@ -23,8 +22,8 @@ public class Vaga implements Serializable {
 
     private Integer nivel;
 
-    @ManyToMany(mappedBy = "candidaturas")
-    Set<Candidato> candidatos = new HashSet<>();
+    @OneToMany(mappedBy = "vaga", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Candidatura> candidaturas;
 
     public Long getId() {
         return id;
@@ -74,30 +73,26 @@ public class Vaga implements Serializable {
         this.nivel = level;
     }
 
-    public Set<Candidato> getCandidatos() {
-        return candidatos;
+    public List<Candidatura> getCandidaturas() {
+        return candidaturas;
     }
 
-    public void addCandidato(Candidato candidato) {
-        this.candidatos.add(candidato);
-        candidato.getCandidaturas().add(this);
+    public void setCandidaturas(List<Candidatura> candidaturas) {
+        this.candidaturas = candidaturas;
     }
 
-    public void removeCandidato(Candidato candidato) {
-        this.candidatos.remove(candidato);
-        candidato.getCandidaturas().remove(this);
-    }
 
     public Vaga() {
         super();
     }
 
-    public Vaga(String empresa, String titulo, String descricao, String localizacao, Integer level, Set<Candidato> candidatos) {
+    public Vaga(Long id, String empresa, String titulo, String descricao, String localizacao, Integer nivel, List<Candidatura> candidaturas) {
+        this.id = id;
         this.empresa = empresa;
         this.titulo = titulo;
         this.descricao = descricao;
         this.localizacao = localizacao;
-        this.nivel = level;
-        this.candidatos = candidatos;
+        this.nivel = nivel;
+        this.candidaturas = candidaturas;
     }
 }

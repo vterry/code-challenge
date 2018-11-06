@@ -1,6 +1,7 @@
 package com.vagas.app.app.service;
 
 import com.vagas.app.app.domain.Candidato;
+import com.vagas.app.app.domain.Candidatura;
 import com.vagas.app.app.domain.Vaga;
 import com.vagas.app.app.repository.CandidatoRepository;
 import com.vagas.app.app.repository.VagaRepository;
@@ -31,6 +32,7 @@ public class VagaService {
 
     @Autowired
     private CandidatoMapper cMapper;
+    private List<Candidatura> ArrayList;
 
 
     public VagaDTO save(VagaDTO vagaDto) {
@@ -48,19 +50,21 @@ public class VagaService {
     }
 
     public void saveNewApplication(Long id_vaga, Long id_candidato) {
+
         Vaga vaga = repository.findVagaById(id_vaga);
         Candidato candidato = candidatoRepository.findCandidatoById(id_candidato);
-        vaga.addCandidato(candidato);
+        Candidatura candidatura = new Candidatura(vaga, candidato, Score.getScore(vaga, candidato));
+        vaga.getCandidaturas().add(candidatura);
         repository.save(vaga);
     }
 
 
     public List<CandidatoDTO> listarCandidaturas(Long id) {
         Vaga vaga = repository.findVagaById(id);
-        List<CandidatoDTO> result = repository.findAllApplications(id).stream()
-                .map(c -> new Candidato(c.getId(), c.getNome(), c.getProfissao(), c.getLocalizacao(), c.getNivel(), Score.getScore(vaga, c), c.getCandidaturas()))
-                .map(cMapper::toDto).collect(Collectors.toList());
-        Collections.sort(result);
-        return result;
+        return vaga.getCandidaturas()
+                .stream()
+                .map(c -> new CandidatoDTO(c.getCandidato().getId(), c.getCandidato().getNome(), c.getCandidato().getProfissao(), c.getCandidato().getLocalizacao(), c.getCandidato().getNivel(), c.getScore()))
+                .sorted(CandidatoDTO::compareTo)
+                .collect(Collectors.toList());
     }
 }

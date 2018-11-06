@@ -44,15 +44,16 @@ public class VagaResource {
 
     @ApiOperation("Efetua a candidatura de um candidato em uma vaga existente.")
     @PostMapping("/v1/candidatura")
-    public ResponseEntity<JSONObject> efetuarCandidatura(@RequestBody CandidaturaRequest candidaturaDTO) {
+    public ResponseEntity<JSONObject> efetuarCandidatura(@RequestBody CandidaturaRequest candidatura) {
         response.clear();
         try {
             response.put("mensagem", "Candidatura efetuada com sucesso!");
-            service.saveNewApplication(candidaturaDTO.getId_vaga(), candidaturaDTO.getId_candidato());
+            service.saveNewApplication(candidatura.getId_vaga(), candidatura.getId_candidato());
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(response);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RecordNotFoundException("Vaga ou candidato não encontrado!");
         }
     }

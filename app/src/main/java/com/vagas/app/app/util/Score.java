@@ -10,7 +10,7 @@ public class Score {
         d.run(candidato.getLocalizacao());
         int diferencaNivel = Math.abs(vaga.getNivel() - candidato.getNivel());
         int n = 100 - 25 * diferencaNivel;
-        return (n + d.getTamanhoMenorCaminho(vaga.getLocalizacao())) / 2;
+        return (n + d.getTamanhoMenorPeso(vaga.getLocalizacao())) / 2;
     }
 
 }

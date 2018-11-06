@@ -7,6 +7,7 @@ import com.vagas.app.app.service.mapper.CandidatoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,9 @@ public class CandidatoService {
     }
 
     public List<CandidatoDTO> findAll() {
-        return repository.findAll().stream().map(mapper::toDto).collect(Collectors.toCollection(LinkedList::new));
+        return repository.findAll()
+                .stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
     }
 }

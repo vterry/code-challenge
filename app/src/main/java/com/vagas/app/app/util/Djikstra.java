@@ -31,6 +31,7 @@ public class Djikstra {
         antecessores = new HashMap<Cidade, Cidade>();
         distancias.put(origem, 0);
         cidadesNaoVisitadas.add(origem);
+
         while (cidadesNaoVisitadas.size() > 0) {
             Cidade cidade = getMinimo(cidadesNaoVisitadas);
             cidadesVisitadas.add(cidade);
@@ -64,7 +65,7 @@ public class Djikstra {
     }
 
     private List<Cidade> getVizinhos(Cidade cidade) {
-        List<Cidade> vizinhos = new ArrayList<Cidade>();
+        List<Cidade> vizinhos = new ArrayList<>();
         for (Trajeto trajeto : trajetos) {
             if (trajeto.getOrigem().equals(cidade)
                     && !foiVisitado(trajeto.getDestino())) {
@@ -74,6 +75,7 @@ public class Djikstra {
         return vizinhos;
     }
 
+    //Retorna a cidade com o menor peso avaliado.
     private Cidade getMinimo(Set<Cidade> cidades) {
         Cidade minimo = null;
         for (Cidade cidade : cidades) {
@@ -88,10 +90,12 @@ public class Djikstra {
         return minimo;
     }
 
+    //Verifica se o no ja foi visistado.
     private boolean foiVisitado(Cidade cidade) {
         return cidadesVisitadas.contains(cidade);
     }
 
+    //Retorna o menor valor avaliado ate o destino selecionado.
     private int getMenorDistancia(Cidade destino) {
         Integer d = distancias.get(destino);
         if (d == null) {
@@ -101,6 +105,7 @@ public class Djikstra {
         }
     }
 
+    //Retorna o caminho entre dois vertices, caso nao exista será retornado null.
     public LinkedList<Cidade> getCaminho(Cidade destino) {
         LinkedList<Cidade> caminho = new LinkedList<Cidade>();
         Cidade step = destino;
@@ -116,7 +121,9 @@ public class Djikstra {
         return caminho;
     }
 
-    public int getTamanhoMenorCaminho(String target) {
+
+    //Retorna o SCORE entre as cidades baseado na tabela abaixo.
+    public int getTamanhoMenorPeso(String target) {
         int distancia = distancias.get(localizarCidade(target));
 
         if (distancia >= 0 && distancia <= 5) {
@@ -134,13 +141,12 @@ public class Djikstra {
         return distancia;
     }
 
+    //Dado uma String, será retornado a cidade equivalente.
     private Cidade localizarCidade(String nomeCidade) {
-        Cidade cidade = null;
-
-        for (Cidade c : this.cidades) {
-            if (c.getName().equals(nomeCidade))
-                cidade = c;
-        }
+        Cidade cidade = this.cidades.stream()
+                .filter(c -> c.getName().equals(nomeCidade))
+                .findAny()
+                .orElse(null);
 
         return cidade;
     }

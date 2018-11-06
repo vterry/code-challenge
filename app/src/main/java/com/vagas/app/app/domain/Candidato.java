@@ -1,7 +1,9 @@
 package com.vagas.app.app.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "candidato")
@@ -9,6 +11,7 @@ public class Candidato {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "candidato_id")
     private Long id;
 
     private String nome;
@@ -19,15 +22,8 @@ public class Candidato {
 
     private Integer nivel;
 
-    private Integer score = 0;
-
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "candidaturas",
-            joinColumns = {@JoinColumn(name = "candidato_id")},
-            inverseJoinColumns = {@JoinColumn(name = "vaga_id")}
-    )
-    Set<Vaga> candidaturas = new HashSet<>();
+    @OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Candidatura> candidaturas;
 
     public Long getId() {
         return id;
@@ -69,19 +65,12 @@ public class Candidato {
         this.nivel = nivel;
     }
 
-    public Integer getScore() {
-        return score;
-    }
 
-    public void setScore(Integer score) {
-        this.score = score;
-    }
-
-    public Set<Vaga> getCandidaturas() {
+    public List<Candidatura> getCandidaturas() {
         return candidaturas;
     }
 
-    public void setCandidaturas(Set<Vaga> candidaturas) {
+    public void setCandidaturas(List<Candidatura> candidaturas) {
         this.candidaturas = candidaturas;
     }
 
@@ -89,13 +78,13 @@ public class Candidato {
         super();
     }
 
-    public Candidato(Long id, String nome, String profissao, String localizacao, Integer nivel, Integer score, Set<Vaga> candidaturas) {
+    public Candidato(Long id, String nome, String profissao, String localizacao, Integer nivel, List<Candidatura> candidaturas, List<Candidatura> candidaturas1) {
         this.id = id;
         this.nome = nome;
         this.profissao = profissao;
         this.localizacao = localizacao;
         this.nivel = nivel;
-        this.score = score;
         this.candidaturas = candidaturas;
+        this.candidaturas = candidaturas1;
     }
 }

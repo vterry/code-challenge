@@ -2,12 +2,14 @@ package com.vagas.app.app.rest;
 
 import com.vagas.app.app.AppApplication;
 import com.vagas.app.app.domain.Candidato;
+import com.vagas.app.app.domain.Candidatura;
 import com.vagas.app.app.domain.Vaga;
 import com.vagas.app.app.repository.CandidatoRepository;
 import com.vagas.app.app.repository.VagaRepository;
 import com.vagas.app.app.resource.VagaResource;
 import com.vagas.app.app.resource.wrapper.CandidaturaRequest;
 import com.vagas.app.app.service.VagaService;
+import com.vagas.app.app.util.Score;
 import com.vagas.app.app.util.Util;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +57,7 @@ public class CandidaturasIntTest {
     private static final String N2_LOCALIZACAO = "B";
     private static final Integer N2_NIVEL = 5;
     private static final Integer N2_SCORE = 100;
+
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
@@ -78,6 +81,8 @@ public class CandidaturasIntTest {
 
     private Candidato candidato2;
 
+    private List<Candidatura> candidaturas;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -92,6 +97,7 @@ public class CandidaturasIntTest {
         vaga.setDescricao(VAGA_DESCRICAO);
         vaga.setLocalizacao(VAGA_LOCALIZACAO);
         vaga.setNivel(VAGA_NIVEL);
+        vaga.setCandidaturas(new ArrayList<Candidatura>());
         return vaga;
     }
 
@@ -125,7 +131,7 @@ public class CandidaturasIntTest {
     @Transactional
     public void efetuarCandidatura() throws Exception {
 
-        vagaRepository.save(vaga);
+        vagaRepository.saveAndFlush(vaga);
         candidatoRepository.saveAndFlush(candidato1);
 
         CandidaturaRequest candidatura = new CandidaturaRequest();
@@ -142,10 +148,11 @@ public class CandidaturasIntTest {
     @Test
     @Transactional
     public void efetuarCandidaturaSemVaga() throws Exception {
+        vagaRepository.deleteAll();
         candidatoRepository.saveAndFlush(candidato1);
 
         CandidaturaRequest candidatura = new CandidaturaRequest();
-        candidatura.setId_vaga(1L);
+        candidatura.setId_vaga(100L);
         candidatura.setId_candidato(candidatoRepository.findAll().get(0).getId());
 
         restVagaServiceMockMvc.perform(post("/v1/candidatura")
@@ -156,8 +163,9 @@ public class CandidaturasIntTest {
 
     @Test
     @Transactional
-    public void efetuarCandidaturaSemCandidato() throws Exception{
+    public void efetuarCandidaturaSemCandidato() throws Exception {
         vagaRepository.saveAndFlush(vaga);
+        candidatoRepository.deleteAll();
 
         CandidaturaRequest candidatura = new CandidaturaRequest();
         candidatura.setId_vaga(vagaRepository.findAll().get(0).getId());
@@ -171,7 +179,10 @@ public class CandidaturasIntTest {
 
     @Test
     @Transactional
-    public void efetuarCandidaturaSemCandidatoEVaga() throws Exception{
+    public void efetuarCandidaturaSemCandidatoEVaga() throws Exception {
+        vagaRepository.deleteAll();
+        candidatoRepository.deleteAll();
+
         CandidaturaRequest candidatura = new CandidaturaRequest();
         candidatura.setId_vaga(100L);
         candidatura.setId_candidato(100L);
@@ -190,8 +201,8 @@ public class CandidaturasIntTest {
         candidatoRepository.saveAndFlush(candidato1);
         candidatoRepository.saveAndFlush(candidato2);
 
-        vaga.addCandidato(candidato1);
-        vaga.addCandidato(candidato2);
+        vaga.getCandidaturas().add(new Candidatura(vaga, candidato1, Score.getScore(vaga, candidato1)));
+        vaga.getCandidaturas().add(new Candidatura(vaga, candidato2, Score.getScore(vaga, candidato2)));
 
         vagaRepository.saveAndFlush(vaga);
 
@@ -202,7 +213,6 @@ public class CandidaturasIntTest {
                 .andExpect(jsonPath("$[0].score", is(N2_SCORE)))
                 .andExpect(jsonPath("$[1].nome", is(candidatoRepository.findAll().get(0).getNome())))
                 .andExpect(jsonPath("$[1].score", is(N1_SCORE)));
-
     }
 
 }

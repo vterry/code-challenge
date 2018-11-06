@@ -15,8 +15,5 @@ public interface VagaRepository extends JpaRepository<Vaga, Long> {
 
     public Vaga findVagaById(Long id);
 
-    @Query("Select v.candidatos from vaga v where v.id = :id")
-    public List<Candidato> findAllApplications(@Param(value = "id") Long id);
-
 
 }
